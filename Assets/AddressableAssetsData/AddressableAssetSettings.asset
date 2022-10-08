@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 468a46d0ae32c3544b7d98094e6448a9, type: 3}
   m_Name: AddressableAssetSettings
   m_EditorClassIdentifier: 
-  m_DefaultGroup: 375b94109ca6e3d4ca0a0bf9856d34c5
+  m_DefaultGroup: 088b4bb3d6f024346ab4f35cfd8029b4
   m_CachedHash:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
@@ -41,7 +41,7 @@ MonoBehaviour:
   m_BuildAddressablesWithPlayerBuild: 0
   m_overridePlayerVersion: '[modName]'
   m_GroupAssets:
-  - {fileID: 11400000, guid: 71ca6ec8da8f22c4ca70ec7f896b13af, type: 2}
+  - {fileID: 11400000, guid: d136012d25a2393459a92966c1a6124b, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -64,7 +64,7 @@ MonoBehaviour:
       - m_Id: c9e9fdb1184ee8f47880b3d8f0a4c065
         m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
       - m_Id: f70b1908c72a2954f9dcb3e27c8ecc83
-        m_Value: PrimroseEgypt
+        m_Value: SuccubusLily
     m_ProfileEntryNames:
     - m_Id: 9a99d44857769334591e1e908ddb2570
       m_Name: BuildTarget
