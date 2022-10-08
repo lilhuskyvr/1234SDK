@@ -23,4 +23,5 @@ public class CharacterInfo : MonoBehaviour
     public AnimationPresetEnum animationPresetEnum;
     public CharacterSoundPresetEnum characterSoundPresetEnum;
     public WeaponPresetEnum[] weaponPresetEnums = { };
+    public bool isNSFW;
 }

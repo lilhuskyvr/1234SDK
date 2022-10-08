@@ -202,13 +202,18 @@ public class BuildLauncher
                     : CharacterSoundPresetEnum.Female.ToString(),
                 weaponPresetIds = characterInfo
                     ? characterInfo.weaponPresetEnums.Select(wpe => wpe.ToString()).ToArray()
-                    : new string[] { }
+                    : new string[] { },
+                isNSFW = characterInfo && characterInfo.isNSFW
             };
-
-            var jsonContent = JsonConvert.SerializeObject(characterDataObject, Formatting.Indented);
+ 
+            var jsonContent = JsonConvert.SerializeObject(characterDataObject, Formatting.Indented, new JsonSerializerSettings() { 
+                TypeNameHandling = TypeNameHandling.All
+            });
 
             File.WriteAllText($"{directoryPath}/{characterId}.json", jsonContent);
-        }
+            
+            AssetDatabase.Refresh();
+        } 
     }
 }
 #endif

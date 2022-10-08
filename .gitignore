@@ -77,3 +77,8 @@ crashlytics-build.properties
 /.idea/
 /[Aa]ssets/ExcludedFromGithub/
 /[Aa]ssets/ExcludedFromGithub.meta
+/[Aa]ssets/MagicaCloth/
+/[Aa]ssets/MagicaCloth.meta
+/[Aa]ssets/AddressableAssetsData/AssetGroups/
+/[Aa]ssets/Mods/
+/[Aa]ssets/Mods.meta

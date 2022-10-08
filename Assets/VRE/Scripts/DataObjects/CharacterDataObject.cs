@@ -7,5 +7,6 @@ namespace VRE.Scripts.DataObjects
         public string characterSoundPresetId;
         public string[] weaponPresetIds = {};
         public string characterRigAddressId;
+        public bool isNSFW;
     }
 }
