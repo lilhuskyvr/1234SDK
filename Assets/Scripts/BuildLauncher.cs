@@ -97,20 +97,27 @@ public class BuildLauncher
 
         foreach (var addressableAssetGroup in settings.groups)
         {
-            addressableAssetGroup.GetSchema<BundledAssetGroupSchema>().BundleNaming =
-                BundledAssetGroupSchema.BundleNamingStyle.NoHash;
-            addressableAssetGroup.GetSchema<BundledAssetGroupSchema>().IncludeInBuild =
-                addressableAssetGroup.name == modName;
-
-            //if eligible to build
-            if (addressableAssetGroup.name == modName)
+            try
             {
-                characterIds.AddRange(
-                    addressableAssetGroup.entries.Select(addressableAssetEntry => addressableAssetEntry.address));
-            }
+                addressableAssetGroup.GetSchema<BundledAssetGroupSchema>().BundleNaming =
+                    BundledAssetGroupSchema.BundleNamingStyle.NoHash;
+                addressableAssetGroup.GetSchema<BundledAssetGroupSchema>().IncludeInBuild =
+                    addressableAssetGroup.name == modName;
 
-            modBuildPathInAssetsFolder =
-                addressableAssetGroup.GetSchema<BundledAssetGroupSchema>().BuildPath.GetValue(settings);
+                //if eligible to build
+                if (addressableAssetGroup.name == modName)
+                {
+                    characterIds.AddRange(
+                        addressableAssetGroup.entries.Select(addressableAssetEntry => addressableAssetEntry.address));
+                }
+
+                modBuildPathInAssetsFolder =
+                    addressableAssetGroup.GetSchema<BundledAssetGroupSchema>().BuildPath.GetValue(settings);
+            }
+            catch (Exception exception)
+            {
+                Debug.Log(exception.Message);
+            }
         }
 
         var isValid = await ValidateAddressables(characterIds);
@@ -205,15 +212,17 @@ public class BuildLauncher
                     : new string[] { },
                 isNSFW = characterInfo && characterInfo.isNSFW
             };
- 
-            var jsonContent = JsonConvert.SerializeObject(characterDataObject, Formatting.Indented, new JsonSerializerSettings() { 
-                TypeNameHandling = TypeNameHandling.All
-            });
+
+            var jsonContent = JsonConvert.SerializeObject(characterDataObject, Formatting.Indented,
+                new JsonSerializerSettings()
+                {
+                    TypeNameHandling = TypeNameHandling.All
+                });
 
             File.WriteAllText($"{directoryPath}/{characterId}.json", jsonContent);
-            
+
             AssetDatabase.Refresh();
-        } 
+        }
     }
 }
 #endif
