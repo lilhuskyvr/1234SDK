@@ -18,27 +18,9 @@ public class BuildLauncher
     public static string build_script
         = "Assets/AddressableAssetsData/DataBuilders/BuildScriptPackedMode.asset";
 
-    public static string settings_asset
-        = "Assets/AddressableAssetsData/AddressableAssetSettings.asset";
-
     public static string profile_name = "Default";
-    private static AddressableAssetSettings settings;
 
-    static void getSettingsObject(string settingsAsset)
-    {
-        // This step is optional, you can also use the default settings:
-        //settings = AddressableAssetSettingsDefaultObject.Settings;
-
-        settings
-            = AssetDatabase.LoadAssetAtPath<ScriptableObject>(settingsAsset)
-                as AddressableAssetSettings;
-
-        if (settings == null)
-            Debug.LogError($"{settingsAsset} couldn't be found or isn't " +
-                           $"a settings object.");
-    }
-
-    static void setProfile(string profile)
+    static void setProfile(string profile, AddressableAssetSettings settings)
     {
         string profileId = settings.profileSettings.GetProfileId(profile);
         if (String.IsNullOrEmpty(profileId))
@@ -48,7 +30,7 @@ public class BuildLauncher
             settings.activeProfileId = profileId;
     }
 
-    static void setBuilder(IDataBuilder builder)
+    static void setBuilder(IDataBuilder builder, AddressableAssetSettings settings)
     {
         int index = settings.DataBuilders.IndexOf((ScriptableObject)builder);
 
@@ -73,25 +55,15 @@ public class BuildLauncher
 
         return success;
     }
-
-    [MenuItem("VRE/Build Custom Characters Mod")]
-    public static async Task<bool> BuildAddressables()
+    
+    public static async Task<bool> BuildAddressables(string modName, AddressableAssetSettings settings)
     {
         var characterIds = new List<string>();
         //ie: Assets/Mods/SuccubusLily
         var modBuildPathInAssetsFolder = "";
-        getSettingsObject(settings_asset);
-        setProfile(profile_name);
+        setProfile(profile_name, settings);
         IDataBuilder builderScript
             = AssetDatabase.LoadAssetAtPath<ScriptableObject>(build_script) as IDataBuilder;
-
-        var modName = "";
-
-        foreach (var addressableAssetGroup in settings.groups)
-        {
-            if (addressableAssetGroup.IsDefaultGroup())
-                modName = addressableAssetGroup.Name;
-        }
 
         settings.profileSettings.SetValue(settings.activeProfileId, "modName", modName);
 
@@ -131,11 +103,11 @@ public class BuildLauncher
             return false;
         }
 
-        setBuilder(builderScript);
+        setBuilder(builderScript, settings);
 
         buildAddressableContent();
 
-        await buildJSONFiles(modBuildPathInAssetsFolder, characterIds);
+        await BuildJSONFiles(modBuildPathInAssetsFolder, characterIds);
 
         return true;
     }
@@ -189,7 +161,7 @@ public class BuildLauncher
         return true;
     }
 
-    static async Task buildJSONFiles(string directoryPath, List<string> characterIds)
+    static async Task BuildJSONFiles(string directoryPath, List<string> characterIds)
     {
         foreach (var characterId in characterIds)
         {
