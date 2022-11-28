@@ -1,8 +1,8 @@
+#if UNITY_EDITOR
 using System.IO;
 using System.Linq;
 using UniGLTF;
 using UnityEditor;
-using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
@@ -96,8 +96,9 @@ public class ModBuilder
             AddAssetToAddressableGroup(file, modAddressableGroup, settings);
         }
 
-        await BuildLauncher.BuildAddressables(modName, settings);
-
+        await BuildLauncher.BuildAddressables();
+ 
         EditorUtility.DisplayDialog("Successful", $"Built mod '{modName}'", "OK");
     }
 }
+#endif
