@@ -6,7 +6,7 @@ namespace VRE.Scripts.Costumes
 {
     public class Costume : MonoBehaviour
     {
-        public List<Transform> parts;
+        public List<Transform> parts = new();
 
         public void Equip()
         {
