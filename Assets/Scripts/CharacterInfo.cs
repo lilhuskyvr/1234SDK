@@ -5,7 +5,8 @@ using VRE.Scripts.DataObjects;
 public enum AnimationPresetEnum
 {
     Melee,
-    Succubus
+    Succubus,
+    Fighter
 }
 
 public enum CharacterSoundPresetEnum
