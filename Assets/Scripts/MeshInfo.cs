@@ -9,10 +9,19 @@ public class MeshInfo: MonoBehaviour
     private void GetInfo()
     {
         var sumTris = 0;
-        foreach (var skinnedMeshRenderer in GetComponentsInChildren<SkinnedMeshRenderer>())
+        foreach (var renderer in GetComponentsInChildren<Renderer>())
         {
-            var tris = skinnedMeshRenderer.sharedMesh.triangles.Length / 3;
-            sumTris += tris;
+            if (renderer is SkinnedMeshRenderer)
+            {
+                var tris = (renderer as SkinnedMeshRenderer).sharedMesh.triangles.Length / 3;
+                sumTris += tris;
+            }
+            
+            if (renderer is MeshRenderer)
+            {
+                var tris = (renderer as MeshRenderer).GetComponent<MeshFilter>().sharedMesh.triangles.Length / 3;
+                sumTris += tris;
+            }
         }
 
         trisCount = sumTris;

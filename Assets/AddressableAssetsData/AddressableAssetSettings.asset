@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 468a46d0ae32c3544b7d98094e6448a9, type: 3}
   m_Name: AddressableAssetSettings
   m_EditorClassIdentifier: 
-  m_DefaultGroup: 54c57ff60ec83f345bc2d791d91fc279
+  m_DefaultGroup: 7c3e806449768b148ba7330fc1529892
   m_CachedHash:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
@@ -46,6 +46,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3129c57c972636b4fb823719c399e33f, type: 2}
   - {fileID: 11400000, guid: 4b4eaecda5a183046a822acf71d0737f, type: 2}
   - {fileID: 11400000, guid: 294d22b018c81134186bf10a915a0a88, type: 2}
+  - {fileID: 11400000, guid: b74c3c64186a61e4e935c32c27633496, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -68,7 +69,7 @@ MonoBehaviour:
       - m_Id: c9e9fdb1184ee8f47880b3d8f0a4c065
         m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
       - m_Id: f70b1908c72a2954f9dcb3e27c8ecc83
-        m_Value: DaemonGirl
+        m_Value: NunMod
     m_ProfileEntryNames:
     - m_Id: 9a99d44857769334591e1e908ddb2570
       m_Name: BuildTarget
