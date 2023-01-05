@@ -27,6 +27,7 @@ namespace VRE.Scripts.Costumes
         [Button]
         public void Preview()
         {
+            gameObject.GetComponentInParent<CostumeManager>().UnEquipAllCostumes();
             Equip();
         }
 

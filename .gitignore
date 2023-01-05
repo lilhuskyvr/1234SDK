@@ -82,3 +82,6 @@ crashlytics-build.properties
 /[Aa]ssets/AddressableAssetsData/AssetGroups/
 /[Aa]ssets/Mods/
 /[Aa]ssets/Mods.meta
+/Screenshots/
+/[Aa]ssets/ScreenshotUtility/
+/[Aa]ssets/ScreenshotUtility.meta
