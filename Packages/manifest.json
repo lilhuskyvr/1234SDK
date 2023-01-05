@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.soupday.cc3_unity_tools": "file:D:/Husky Den/cc_unity_tools_URP-1.4.3.URP12",
     "com.unity.addressables": "1.19.19",
     "com.unity.animation.rigging": "1.1.1",
     "com.unity.collab-proxy": "1.17.2",

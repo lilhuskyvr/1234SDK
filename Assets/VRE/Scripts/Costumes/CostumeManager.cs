@@ -42,6 +42,10 @@ namespace VRE.Scripts.Costumes
         [Button]
         public void UnEquipAllCostumes()
         {
+            if (Application.isEditor)
+            {
+                Init();
+            }
             foreach (var costume in _costumes)
             {
                 costume.UnEquip();
