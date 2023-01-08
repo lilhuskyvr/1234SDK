@@ -73,10 +73,11 @@ public class BuildLauncher
 
         return success;
     }
-    
+
+    [MenuItem("VRE/Build Default Addressable Group")]
     public static async Task<bool> BuildAddressables()
     {
-        var characterIds = new List<string>();
+        var addressableAddressIds = new List<string>();
         //ie: Assets/Mods/SuccubusLily
         var modBuildPathInAssetsFolder = "";
         getSettingsObject(settings_asset);
@@ -106,7 +107,7 @@ public class BuildLauncher
                 //if eligible to build
                 if (addressableAssetGroup.name == modName)
                 {
-                    characterIds.AddRange(
+                    addressableAddressIds.AddRange(
                         addressableAssetGroup.entries.Select(addressableAssetEntry => addressableAssetEntry.address));
                 }
 
@@ -119,7 +120,7 @@ public class BuildLauncher
             }
         }
 
-        var isValid = await ValidateAddressables(characterIds);
+        var isValid = await ValidateAddressables(addressableAddressIds);
 
         if (!isValid)
             return false;
@@ -134,34 +135,45 @@ public class BuildLauncher
 
         buildAddressableContent();
 
-        await buildJSONFiles(modBuildPathInAssetsFolder, characterIds);
+        await buildJSONFiles(modBuildPathInAssetsFolder, addressableAddressIds);
 
         return true;
     }
 
-    private static async Task<bool> ValidateAddressables(List<string> characterIds)
+    private static async Task<bool> ValidateAddressables(List<string> addressableAddressIds)
     {
-        foreach (var characterId in characterIds)
+        foreach (var addressableAddressId in addressableAddressIds)
         {
-            if (characterId.Contains(" "))
+            if (addressableAddressId.Contains(" "))
             {
-                EditorUtility.DisplayDialog("Error", $"Character Name can't contain Space in '{characterId}'", "OK");
+                EditorUtility.DisplayDialog("Error", $"Character Name can't contain Space in '{addressableAddressId}'",
+                    "OK");
                 return false;
             }
 
-            var go = await Addressables.LoadAssetAsync<GameObject>(characterId).Task;
+            var go = await Addressables.LoadAssetAsync<GameObject>(addressableAddressId).Task;
+
+            var characterInfo = go.GetComponent<CharacterInfo>();
+
+            // not a character
+            if (characterInfo == null)
+            {
+                continue;
+            }
 
             var goAnimator = go.GetComponent<Animator>();
 
             if (goAnimator == null)
             {
-                EditorUtility.DisplayDialog("Error", $"Character doesn't have Animator in '{characterId}'", "OK");
+                EditorUtility.DisplayDialog("Error", $"Character doesn't have Animator in '{addressableAddressId}'",
+                    "OK");
                 return false;
             }
 
             if (!goAnimator.isHuman)
             {
-                EditorUtility.DisplayDialog("Error", $"Character Animator isn't humanoid in '{characterId}'", "OK");
+                EditorUtility.DisplayDialog("Error", $"Character Animator isn't humanoid in '{addressableAddressId}'",
+                    "OK");
                 return false;
             }
 
@@ -170,7 +182,7 @@ public class BuildLauncher
                 if (skinnedMeshRenderer.sharedMesh == null)
                 {
                     EditorUtility.DisplayDialog("Error",
-                        $"Skinned Mesh Renderer contains null mesh in '{characterId}: {skinnedMeshRenderer.name}'",
+                        $"Skinned Mesh Renderer contains null mesh in '{addressableAddressId}: {skinnedMeshRenderer.name}'",
                         "OK");
                     return false;
                 }
@@ -178,7 +190,7 @@ public class BuildLauncher
                 if (!skinnedMeshRenderer.sharedMesh.isReadable)
                 {
                     EditorUtility.DisplayDialog("Error",
-                        $"Skinned Mesh Renderer isn't readable/writeable in '{characterId}: {skinnedMeshRenderer.name}'",
+                        $"Skinned Mesh Renderer isn't readable/writeable in '{addressableAddressId}: {skinnedMeshRenderer.name}'",
                         "OK");
                     return false;
                 }
@@ -195,6 +207,8 @@ public class BuildLauncher
             var characterGameObject = await Addressables.LoadAssetAsync<GameObject>(characterId).Task;
 
             var characterInfo = characterGameObject.GetComponent<CharacterInfo>();
+
+            if (ReferenceEquals(characterInfo, null)) continue;
 
             var characterDataObject = new CharacterDataObject()
             {

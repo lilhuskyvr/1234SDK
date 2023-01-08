@@ -31,7 +31,7 @@ public class ModBuilder
         {
             addressableGroup = settings.CreateGroup(modName, false, false, false, settings.DefaultGroup.Schemas);
         }
-        
+
         return addressableGroup;
     }
 
@@ -96,9 +96,9 @@ public class ModBuilder
             AddAssetToAddressableGroup(file, modAddressableGroup, settings);
         }
 
-        await BuildLauncher.BuildAddressables();
- 
-        EditorUtility.DisplayDialog("Successful", $"Built mod '{modName}'", "OK");
+        var success = await BuildLauncher.BuildAddressables();
+
+        if (success) EditorUtility.DisplayDialog("Successful", $"Built mod '{modName}'", "OK");
     }
 }
 #endif
