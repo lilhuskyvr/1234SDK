@@ -2,7 +2,6 @@
 
 namespace VRE.Scripts.DataObjects
 {
-    [Obfuscation(Exclude = true)]
     public class OutfitItemDataObject
     {
         public string id;
