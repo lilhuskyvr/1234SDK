@@ -12,6 +12,8 @@ using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using VRE.Scripts.DataObjects;
+using VRE.Scripts.Infos;
+using CharacterInfo = VRE.Scripts.Infos.CharacterInfo;
 
 public class BuildLauncher
 {
