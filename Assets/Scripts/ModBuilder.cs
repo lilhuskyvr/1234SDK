@@ -5,6 +5,8 @@ using UniGLTF;
 using UnityEditor;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
+using VRE.Scripts.Infos;
+using CharacterInfo = VRE.Scripts.Infos.CharacterInfo;
 
 public class ModBuilder
 {
@@ -62,11 +64,10 @@ public class ModBuilder
     {
         var gameObject = AssetDatabase.LoadAssetAtPath<GameObject>(path);
 
-        var characterInfo = gameObject.GetComponent<CharacterInfo>();
-
-        if (ReferenceEquals(characterInfo, null)) return false;
-
-        return true;
+        var hasCharacterInfo = !ReferenceEquals(gameObject.GetComponent<CharacterInfo>(), null);
+        var hasOutfitItemInfo = !ReferenceEquals(gameObject.GetComponent<OutfitItemInfo>(), null);
+        
+        return hasCharacterInfo || hasOutfitItemInfo;
     }
 
     [MenuItem("VRE/Build Mods")]

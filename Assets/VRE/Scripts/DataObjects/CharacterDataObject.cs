@@ -1,6 +1,6 @@
 namespace VRE.Scripts.DataObjects
 {
-    public class CharacterDataObject
+    public class CharacterDataObject: DataObject
     {
         public string id;
         public string animationPresetId;

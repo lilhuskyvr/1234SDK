@@ -2,7 +2,7 @@
 
 namespace VRE.Scripts.DataObjects
 {
-    public class OutfitItemDataObject
+    public class OutfitItemDataObject : DataObject
     {
         public string id;
         public string[] manikinPartAddressIds = { };

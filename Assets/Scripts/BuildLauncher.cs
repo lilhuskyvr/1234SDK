@@ -202,42 +202,51 @@ public class BuildLauncher
         return true;
     }
 
-    static async Task buildJSONFiles(string directoryPath, List<string> characterIds)
+    static async Task buildJSONFiles(string directoryPath, List<string> addressableAddressIds)
     {
-        foreach (var characterId in characterIds)
+        foreach (var addressableAddressId in addressableAddressIds)
         {
-            var characterGameObject = await Addressables.LoadAssetAsync<GameObject>(characterId).Task;
+            var characterGameObject = await Addressables.LoadAssetAsync<GameObject>(addressableAddressId).Task;
 
             var characterInfo = characterGameObject.GetComponent<CharacterInfo>();
+            var outfitItemInfo = characterGameObject.GetComponent<OutfitItemInfo>();
 
-            if (ReferenceEquals(characterInfo, null)) continue;
-
-            var characterDataObject = new CharacterDataObject()
+            if (!ReferenceEquals(characterInfo, null))
             {
-                id = characterId,
-                characterRigAddressId = characterId,
-                animationPresetId = characterInfo
-                    ? characterInfo.animationPresetEnum.ToString()
-                    : AnimationPresetEnum.Melee.ToString(),
-                characterSoundPresetId = characterInfo
-                    ? characterInfo.characterSoundPresetEnum.ToString()
-                    : CharacterSoundPresetEnum.Female.ToString(),
-                weaponPresetIds = characterInfo
-                    ? characterInfo.weaponPresetEnums.Select(wpe => wpe.ToString()).ToArray()
-                    : new string[] { },
-                isNSFW = characterInfo && characterInfo.isNSFW
-            };
 
-            var jsonContent = JsonConvert.SerializeObject(characterDataObject, Formatting.Indented,
-                new JsonSerializerSettings()
+                var characterDataObject = new CharacterDataObject
                 {
-                    TypeNameHandling = TypeNameHandling.All
-                });
+                    id = addressableAddressId,
+                    characterRigAddressId = addressableAddressId,
+                    animationPresetId = characterInfo
+                        ? characterInfo.animationPresetEnum.ToString()
+                        : AnimationPresetEnum.Melee.ToString(),
+                    characterSoundPresetId = characterInfo
+                        ? characterInfo.characterSoundPresetEnum.ToString()
+                        : CharacterSoundPresetEnum.Female.ToString(),
+                    weaponPresetIds = characterInfo
+                        ? characterInfo.weaponPresetEnums.Select(wpe => wpe.ToString()).ToArray()
+                        : new string[] { },
+                    isNSFW = characterInfo && characterInfo.isNSFW
+                };
 
-            File.WriteAllText($"{directoryPath}/{characterId}.json", jsonContent);
+                File.WriteAllText($"{directoryPath}/{addressableAddressId}.json", characterDataObject.ToJson());
+            }
 
-            AssetDatabase.Refresh();
+            if (!ReferenceEquals(outfitItemInfo, null))
+            {
+                var outfitItemDataObject = new OutfitItemDataObject()
+                {
+                    id = addressableAddressId,
+                    manikinPartAddressIds = new[] { addressableAddressId },
+                    minQuality = outfitItemInfo.minQuality
+                };
+                
+                File.WriteAllText($"{directoryPath}/{addressableAddressId}.json", outfitItemDataObject.ToJson());
+            }
         }
+        
+        AssetDatabase.Refresh();
     }
 }
 #endif
