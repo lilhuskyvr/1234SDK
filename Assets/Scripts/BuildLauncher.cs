@@ -50,16 +50,23 @@ public class BuildLauncher
             settings.activeProfileId = profileId;
     }
 
-    static void setBuilder(IDataBuilder builder)
+    static bool setBuilder(IDataBuilder builder)
     {
         int index = settings.DataBuilders.IndexOf((ScriptableObject)builder);
 
         if (index > 0)
+        {
             settings.ActivePlayerDataBuilderIndex = index;
+            return true;
+        }
         else
+        {
             Debug.LogWarning($"{builder} must be added to the " +
                              $"DataBuilders list before it can be made " +
                              $"active. Using last run builder instead.");
+
+            return false;
+        }
     }
 
     static bool buildAddressableContent()
@@ -70,7 +77,7 @@ public class BuildLauncher
 
         if (!success)
         {
-            Debug.LogError("Addressables build error encountered: " + result.Error);
+            EditorUtility.DisplayDialog("Failure!", "Addressables build error encountered: " + result.Error, "OK");
         }
 
         return success;
@@ -122,20 +129,23 @@ public class BuildLauncher
             }
         }
 
-        var isValid = await ValidateAddressables(addressableAddressIds);
-
-        if (!isValid)
-            return false;
+        // var isValid = await ValidateAddressables(addressableAddressIds);
 
         if (builderScript == null)
         {
-            Debug.LogError(build_script + " couldn't be found or isn't a build script.");
+            EditorUtility.DisplayDialog("Failure!", build_script + " couldn't be found or isn't a build script.", "OK");
             return false;
         }
 
-        setBuilder(builderScript);
+        if (!setBuilder(builderScript))
+        {
+            EditorUtility.DisplayDialog("Failure!", "Fail to setup builderScript", "OK");
+            return false;
+        }
 
         buildAddressableContent();
+
+        EditorUtility.DisplayDialog("Successful!", "Built addressable content", "OK");
 
         await buildJSONFiles(modBuildPathInAssetsFolder, addressableAddressIds);
 
@@ -151,7 +161,7 @@ public class BuildLauncher
                 EditorUtility.DisplayDialog("Error", $"Character Name can't contain Space in '{addressableAddressId}'",
                     "OK");
                 return false;
-            }
+            }  
 
             var go = await Addressables.LoadAssetAsync<GameObject>(addressableAddressId).Task;
 
@@ -204,6 +214,9 @@ public class BuildLauncher
 
     static async Task buildJSONFiles(string directoryPath, List<string> addressableAddressIds)
     {
+        var characterDirectory = $"{directoryPath}/Characters";
+        var outfitItemDirectory = $"{directoryPath}/OutfitItems";
+
         foreach (var addressableAddressId in addressableAddressIds)
         {
             var characterGameObject = await Addressables.LoadAssetAsync<GameObject>(addressableAddressId).Task;
@@ -213,7 +226,6 @@ public class BuildLauncher
 
             if (!ReferenceEquals(characterInfo, null))
             {
-
                 var characterDataObject = new CharacterDataObject
                 {
                     id = addressableAddressId,
@@ -230,7 +242,8 @@ public class BuildLauncher
                     isNSFW = characterInfo && characterInfo.isNSFW
                 };
 
-                File.WriteAllText($"{directoryPath}/{addressableAddressId}.json", characterDataObject.ToJson());
+                if (!Directory.Exists(characterDirectory)) Directory.CreateDirectory(characterDirectory);
+                File.WriteAllText($"{characterDirectory}/{addressableAddressId}.json", characterDataObject.ToJson());
             }
 
             if (!ReferenceEquals(outfitItemInfo, null))
@@ -241,11 +254,12 @@ public class BuildLauncher
                     manikinPartAddressIds = new[] { addressableAddressId },
                     minQuality = outfitItemInfo.minQuality
                 };
-                
-                File.WriteAllText($"{directoryPath}/{addressableAddressId}.json", outfitItemDataObject.ToJson());
+
+                if (!Directory.Exists(outfitItemDirectory)) Directory.CreateDirectory(outfitItemDirectory);
+                File.WriteAllText($"{outfitItemDirectory}/{addressableAddressId}.json", outfitItemDataObject.ToJson());
             }
         }
-        
+
         AssetDatabase.Refresh();
     }
 }
