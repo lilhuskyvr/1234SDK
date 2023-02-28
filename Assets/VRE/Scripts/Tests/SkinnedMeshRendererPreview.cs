@@ -1,6 +1,6 @@
 ﻿#if UNITY_EDITOR
-using System;
 using EasyButtons;
+using UniGLTF;
 using UnityEditor;
 using UnityEngine;
 using VRE.Scripts.Extensions;
@@ -22,11 +22,26 @@ namespace VRE.Scripts.Tests
             Clean();
             foreach (var skinnedMeshRenderer in GetComponentsInChildren<SkinnedMeshRenderer>())
             {
-                var meshFilterGo = new GameObject($"{skinnedMeshRenderer.name}Preview");
+                var goName = $"{skinnedMeshRenderer.name}Preview";
+                var goTransform = skinnedMeshRenderer.transform.Find(goName);
+                GameObject meshFilterGo;
+                
+                if (goTransform == null)
+                {
+                    meshFilterGo = new GameObject(goName);
+                }
+                else
+                {
+                    meshFilterGo = goTransform.gameObject;
+                }
+                
+                meshFilterGo.SetActive(true);
+
                 meshFilterGo.transform.SetParentOrigin(skinnedMeshRenderer.transform);
 
-                var meshFilter = meshFilterGo.AddComponent<MeshFilter>();
-                var meshRenderer = meshFilterGo.AddComponent<MeshRenderer>();
+                var meshFilter = meshFilterGo.GetOrAddComponent<MeshFilter>();
+                var meshRenderer = meshFilterGo.GetOrAddComponent<MeshRenderer>();
+
                 meshFilter.sharedMesh = skinnedMeshRenderer.sharedMesh;
 
                 meshRenderer.sharedMaterials = new[] { skinnedMeshRenderer.sharedMaterial };
@@ -45,7 +60,7 @@ namespace VRE.Scripts.Tests
         {
             foreach (var meshFilter in GetComponentsInChildren<MeshFilter>())
             {
-                DestroyImmediate(meshFilter.gameObject, true);
+                meshFilter.gameObject.SetActive(false);
             }
         }
     }

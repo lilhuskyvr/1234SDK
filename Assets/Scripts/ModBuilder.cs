@@ -63,16 +63,10 @@ public class ModBuilder
     private static bool ValidatePrefab(string path)
     {
         var gameObject = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-        var isValid = true;
         var hasCharacterInfo = !ReferenceEquals(gameObject.GetComponent<CharacterInfo>(), null);
         var hasOutfitItemInfo = !ReferenceEquals(gameObject.GetComponent<OutfitItemInfo>(), null);
 
-        if (hasCharacterInfo)
-        {
-            isValid = ValidateCharacterInfo(gameObject);
-        }
-        
-        return hasCharacterInfo || hasOutfitItemInfo && isValid;
+        return hasCharacterInfo ? ValidateCharacterInfo(gameObject) : hasOutfitItemInfo;
     }
 
     private static bool ValidateCharacterInfo(GameObject go)

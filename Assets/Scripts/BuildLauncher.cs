@@ -248,11 +248,13 @@ public class BuildLauncher
 
             if (!ReferenceEquals(outfitItemInfo, null))
             {
+                Debug.Log("outfit item" + addressableAddressId);
                 var outfitItemDataObject = new OutfitItemDataObject()
                 {
                     id = addressableAddressId,
                     manikinPartAddressIds = new[] { addressableAddressId },
-                    minQuality = outfitItemInfo.minQuality
+                    minQuality = outfitItemInfo.minQuality,
+                    belongsToBody = outfitItemInfo.belongsToBody
                 };
 
                 if (!Directory.Exists(outfitItemDirectory)) Directory.CreateDirectory(outfitItemDirectory);

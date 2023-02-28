@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace VRE.Scripts.Tests
 {
-    public class AnimationPlayer : MonoBehaviour
+    public class AnimationPreview : MonoBehaviour
     {
         public AnimationClip animationClip;
         [Range(0, 100)] public int time;

@@ -6,6 +6,7 @@ namespace VRE.Scripts.DataObjects
     {
         public string id;
         public string[] manikinPartAddressIds = { };
-        public float minQuality = 0.2f;
+        public float minQuality = 1f;
+        public bool belongsToBody;
     }
 }
