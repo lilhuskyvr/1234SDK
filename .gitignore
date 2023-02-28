@@ -83,11 +83,9 @@ crashlytics-build.properties
 /[Aa]ssets/Mods/
 /[Aa]ssets/Mods.meta
 /Screenshots/
-/[Aa]ssets/ScreenshotUtility/
-/[Aa]ssets/ScreenshotUtility.meta
-/Assets/PolyFew/
-/Assets/PolyFew.meta
 /Assets/UMS_LODs/
 /Assets/UMS_LODs.meta
-/Assets/com.chabuk.manikinmono.meta
-/Assets/com.chabuk.manikinmono/
+/Assets/Plugins/
+/Assets/Plugins.meta
+/Assets/Temp/
+/Assets/Temp.meta

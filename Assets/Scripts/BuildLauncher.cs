@@ -12,6 +12,8 @@ using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using VRE.Scripts.DataObjects;
+using VRE.Scripts.Infos;
+using CharacterInfo = VRE.Scripts.Infos.CharacterInfo;
 
 public class BuildLauncher
 {
@@ -48,16 +50,23 @@ public class BuildLauncher
             settings.activeProfileId = profileId;
     }
 
-    static void setBuilder(IDataBuilder builder)
+    static bool setBuilder(IDataBuilder builder)
     {
         int index = settings.DataBuilders.IndexOf((ScriptableObject)builder);
 
         if (index > 0)
+        {
             settings.ActivePlayerDataBuilderIndex = index;
+            return true;
+        }
         else
+        {
             Debug.LogWarning($"{builder} must be added to the " +
                              $"DataBuilders list before it can be made " +
                              $"active. Using last run builder instead.");
+
+            return false;
+        }
     }
 
     static bool buildAddressableContent()
@@ -68,7 +77,7 @@ public class BuildLauncher
 
         if (!success)
         {
-            Debug.LogError("Addressables build error encountered: " + result.Error);
+            EditorUtility.DisplayDialog("Failure!", "Addressables build error encountered: " + result.Error, "OK");
         }
 
         return success;
@@ -120,20 +129,23 @@ public class BuildLauncher
             }
         }
 
-        var isValid = await ValidateAddressables(addressableAddressIds);
-
-        if (!isValid)
-            return false;
+        // var isValid = await ValidateAddressables(addressableAddressIds);
 
         if (builderScript == null)
         {
-            Debug.LogError(build_script + " couldn't be found or isn't a build script.");
+            EditorUtility.DisplayDialog("Failure!", build_script + " couldn't be found or isn't a build script.", "OK");
             return false;
         }
 
-        setBuilder(builderScript);
+        if (!setBuilder(builderScript))
+        {
+            EditorUtility.DisplayDialog("Failure!", "Fail to setup builderScript", "OK");
+            return false;
+        }
 
         buildAddressableContent();
+
+        EditorUtility.DisplayDialog("Successful!", "Built addressable content", "OK");
 
         await buildJSONFiles(modBuildPathInAssetsFolder, addressableAddressIds);
 
@@ -149,7 +161,7 @@ public class BuildLauncher
                 EditorUtility.DisplayDialog("Error", $"Character Name can't contain Space in '{addressableAddressId}'",
                     "OK");
                 return false;
-            }
+            }  
 
             var go = await Addressables.LoadAssetAsync<GameObject>(addressableAddressId).Task;
 
@@ -200,42 +212,57 @@ public class BuildLauncher
         return true;
     }
 
-    static async Task buildJSONFiles(string directoryPath, List<string> characterIds)
+    static async Task buildJSONFiles(string directoryPath, List<string> addressableAddressIds)
     {
-        foreach (var characterId in characterIds)
+        var characterDirectory = $"{directoryPath}/Characters";
+        var outfitItemDirectory = $"{directoryPath}/OutfitItems";
+
+        foreach (var addressableAddressId in addressableAddressIds)
         {
-            var characterGameObject = await Addressables.LoadAssetAsync<GameObject>(characterId).Task;
+            var characterGameObject = await Addressables.LoadAssetAsync<GameObject>(addressableAddressId).Task;
 
             var characterInfo = characterGameObject.GetComponent<CharacterInfo>();
+            var outfitItemInfo = characterGameObject.GetComponent<OutfitItemInfo>();
 
-            if (ReferenceEquals(characterInfo, null)) continue;
-
-            var characterDataObject = new CharacterDataObject()
+            if (!ReferenceEquals(characterInfo, null))
             {
-                id = characterId,
-                characterRigAddressId = characterId,
-                animationPresetId = characterInfo
-                    ? characterInfo.animationPresetEnum.ToString()
-                    : AnimationPresetEnum.Melee.ToString(),
-                characterSoundPresetId = characterInfo
-                    ? characterInfo.characterSoundPresetEnum.ToString()
-                    : CharacterSoundPresetEnum.Female.ToString(),
-                weaponPresetIds = characterInfo
-                    ? characterInfo.weaponPresetEnums.Select(wpe => wpe.ToString()).ToArray()
-                    : new string[] { },
-                isNSFW = characterInfo && characterInfo.isNSFW
-            };
-
-            var jsonContent = JsonConvert.SerializeObject(characterDataObject, Formatting.Indented,
-                new JsonSerializerSettings()
+                var characterDataObject = new CharacterDataObject
                 {
-                    TypeNameHandling = TypeNameHandling.All
-                });
+                    id = addressableAddressId,
+                    characterRigAddressId = addressableAddressId,
+                    animationPresetId = characterInfo
+                        ? characterInfo.animationPresetEnum.ToString()
+                        : AnimationPresetEnum.Melee.ToString(),
+                    characterSoundPresetId = characterInfo
+                        ? characterInfo.characterSoundPresetEnum.ToString()
+                        : CharacterSoundPresetEnum.Female.ToString(),
+                    weaponPresetIds = characterInfo
+                        ? characterInfo.weaponPresetEnums.Select(wpe => wpe.ToString()).ToArray()
+                        : new string[] { },
+                    isNSFW = characterInfo && characterInfo.isNSFW
+                };
 
-            File.WriteAllText($"{directoryPath}/{characterId}.json", jsonContent);
+                if (!Directory.Exists(characterDirectory)) Directory.CreateDirectory(characterDirectory);
+                File.WriteAllText($"{characterDirectory}/{addressableAddressId}.json", characterDataObject.ToJson());
+            }
 
-            AssetDatabase.Refresh();
+            if (!ReferenceEquals(outfitItemInfo, null))
+            {
+                Debug.Log("outfit item" + addressableAddressId);
+                var outfitItemDataObject = new OutfitItemDataObject()
+                {
+                    id = addressableAddressId,
+                    manikinPartAddressIds = new[] { addressableAddressId },
+                    minQuality = outfitItemInfo.minQuality,
+                    belongsToBody = outfitItemInfo.belongsToBody
+                };
+
+                if (!Directory.Exists(outfitItemDirectory)) Directory.CreateDirectory(outfitItemDirectory);
+                File.WriteAllText($"{outfitItemDirectory}/{addressableAddressId}.json", outfitItemDataObject.ToJson());
+            }
         }
+
+        AssetDatabase.Refresh();
     }
 }
 #endif

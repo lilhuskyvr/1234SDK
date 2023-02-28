@@ -5,6 +5,8 @@ using UniGLTF;
 using UnityEditor;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
+using VRE.Scripts.Infos;
+using CharacterInfo = VRE.Scripts.Infos.CharacterInfo;
 
 public class ModBuilder
 {
@@ -61,10 +63,48 @@ public class ModBuilder
     private static bool ValidatePrefab(string path)
     {
         var gameObject = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+        var hasCharacterInfo = !ReferenceEquals(gameObject.GetComponent<CharacterInfo>(), null);
+        var hasOutfitItemInfo = !ReferenceEquals(gameObject.GetComponent<OutfitItemInfo>(), null);
 
-        var characterInfo = gameObject.GetComponent<CharacterInfo>();
+        return hasCharacterInfo ? ValidateCharacterInfo(gameObject) : hasOutfitItemInfo;
+    }
 
-        if (ReferenceEquals(characterInfo, null)) return false;
+    private static bool ValidateCharacterInfo(GameObject go)
+    {
+        var goAnimator = go.GetComponent<Animator>();
+
+        if (goAnimator == null)
+        {
+            EditorUtility.DisplayDialog("Error", $"Character doesn't have Animator in '{go.name}'",
+                "OK");
+            return false;
+        }
+
+        if (!goAnimator.isHuman)
+        {
+            EditorUtility.DisplayDialog("Error", $"Character Animator isn't humanoid in '{go.name}'",
+                "OK");
+            return false;
+        }
+
+        foreach (var skinnedMeshRenderer in go.GetComponentsInChildren<SkinnedMeshRenderer>())
+        {
+            if (skinnedMeshRenderer.sharedMesh == null)
+            {
+                EditorUtility.DisplayDialog("Error",
+                    $"Skinned Mesh Renderer contains null mesh in '{go.name}: {skinnedMeshRenderer.name}'",
+                    "OK");
+                return false;
+            }
+
+            if (!skinnedMeshRenderer.sharedMesh.isReadable)
+            {
+                EditorUtility.DisplayDialog("Error",
+                    $"Skinned Mesh Renderer isn't readable/writeable in '{go.name}: {skinnedMeshRenderer.name}'",
+                    "OK");
+                return false;
+            }
+        }
 
         return true;
     }
