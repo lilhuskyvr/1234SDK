@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -147,7 +146,7 @@ public class BuildLauncher
 
         EditorUtility.DisplayDialog("Successful!", "Built addressable content", "OK");
 
-        await buildJSONFiles(modBuildPathInAssetsFolder, addressableAddressIds);
+        await BuildJsonFiles(modBuildPathInAssetsFolder, addressableAddressIds);
 
         return true;
     }
@@ -212,7 +211,7 @@ public class BuildLauncher
         return true;
     }
 
-    static async Task buildJSONFiles(string directoryPath, List<string> addressableAddressIds)
+    public static async Task BuildJsonFiles(string directoryPath, List<string> addressableAddressIds)
     {
         var characterDirectory = $"{directoryPath}/Characters";
         var outfitItemDirectory = $"{directoryPath}/OutfitItems";
@@ -243,13 +242,13 @@ public class BuildLauncher
                 };
 
                 if (!Directory.Exists(characterDirectory)) Directory.CreateDirectory(characterDirectory);
-                File.WriteAllText($"{characterDirectory}/{addressableAddressId}.json", characterDataObject.ToJson());
+                await File.WriteAllTextAsync($"{characterDirectory}/{addressableAddressId}.json", characterDataObject.ToJson());
             }
 
             if (!ReferenceEquals(outfitItemInfo, null))
             {
                 Debug.Log("outfit item" + addressableAddressId);
-                var outfitItemDataObject = new OutfitItemDataObject()
+                var outfitItemDataObject = new OutfitItemDataObject
                 {
                     id = addressableAddressId,
                     manikinPartAddressIds = new[] { addressableAddressId },
@@ -258,7 +257,7 @@ public class BuildLauncher
                 };
 
                 if (!Directory.Exists(outfitItemDirectory)) Directory.CreateDirectory(outfitItemDirectory);
-                File.WriteAllText($"{outfitItemDirectory}/{addressableAddressId}.json", outfitItemDataObject.ToJson());
+                await File.WriteAllTextAsync($"{outfitItemDirectory}/{addressableAddressId}.json", outfitItemDataObject.ToJson());
             }
         }
 
