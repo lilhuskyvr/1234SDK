@@ -82,10 +82,8 @@ public class BuildLauncher
         return success;
     }
 
-    [MenuItem("VRE/Build Default Addressable Group")]
-    public static async Task<bool> BuildAddressables()
+    public static async Task<bool> BuildAddressables(List<ModAsset> modAssets)
     {
-        var addressableAddressIds = new List<string>();
         //ie: Assets/Mods/SuccubusLily
         var modBuildPathInAssetsFolder = "";
         getSettingsObject(settings_asset);
@@ -112,13 +110,6 @@ public class BuildLauncher
                 addressableAssetGroup.GetSchema<BundledAssetGroupSchema>().IncludeInBuild =
                     addressableAssetGroup.name == modName;
 
-                //if eligible to build
-                if (addressableAssetGroup.name == modName)
-                {
-                    addressableAddressIds.AddRange(
-                        addressableAssetGroup.entries.Select(addressableAssetEntry => addressableAssetEntry.address));
-                }
-
                 modBuildPathInAssetsFolder =
                     addressableAssetGroup.GetSchema<BundledAssetGroupSchema>().BuildPath.GetValue(settings);
             }
@@ -127,8 +118,6 @@ public class BuildLauncher
                 Debug.Log(exception.Message);
             }
         }
-
-        // var isValid = await ValidateAddressables(addressableAddressIds);
 
         if (builderScript == null)
         {
@@ -146,7 +135,7 @@ public class BuildLauncher
 
         EditorUtility.DisplayDialog("Successful!", "Built addressable content", "OK");
 
-        await BuildJsonFiles(modBuildPathInAssetsFolder, addressableAddressIds);
+        await BuildJsonFiles(modBuildPathInAssetsFolder, modAssets);
 
         return true;
     }
@@ -160,7 +149,7 @@ public class BuildLauncher
                 EditorUtility.DisplayDialog("Error", $"Character Name can't contain Space in '{addressableAddressId}'",
                     "OK");
                 return false;
-            }  
+            }
 
             var go = await Addressables.LoadAssetAsync<GameObject>(addressableAddressId).Task;
 
@@ -211,53 +200,47 @@ public class BuildLauncher
         return true;
     }
 
-    public static async Task BuildJsonFiles(string directoryPath, List<string> addressableAddressIds)
+    public static async Task BuildJsonFiles(string directoryPath, List<ModAsset> modAssets)
     {
         var characterDirectory = $"{directoryPath}/Characters";
         var outfitItemDirectory = $"{directoryPath}/OutfitItems";
 
-        foreach (var addressableAddressId in addressableAddressIds)
+        foreach (var modAsset in modAssets)
         {
-            var characterGameObject = await Addressables.LoadAssetAsync<GameObject>(addressableAddressId).Task;
-
-            var characterInfo = characterGameObject.GetComponent<CharacterInfo>();
-            var outfitItemInfo = characterGameObject.GetComponent<OutfitItemInfo>();
-
-            if (!ReferenceEquals(characterInfo, null))
+            if (modAsset.info is CharacterInfo characterInfo)
             {
                 var characterDataObject = new CharacterDataObject
                 {
-                    id = addressableAddressId,
-                    characterRigAddressId = addressableAddressId,
-                    animationPresetId = characterInfo
-                        ? characterInfo.animationPresetEnum.ToString()
-                        : AnimationPresetEnum.Melee.ToString(),
-                    characterSoundPresetId = characterInfo
-                        ? characterInfo.characterSoundPresetEnum.ToString()
-                        : CharacterSoundPresetEnum.Female.ToString(),
-                    weaponPresetIds = characterInfo
-                        ? characterInfo.weaponPresetEnums.Select(wpe => wpe.ToString()).ToArray()
-                        : new string[] { },
-                    isNSFW = characterInfo && characterInfo.isNSFW
+                    id = modAsset.addressableAddressId,
+                    characterRigAddressId = modAsset.addressableAddressId,
+                    animationPresetId =
+                        characterInfo.animationPresetEnum.ToString(),
+                    characterSoundPresetId = characterInfo.characterSoundPresetEnum.ToString(),
+                    weaponPresetIds = characterInfo.weaponPresetEnums.Select(wpe => wpe.ToString()).ToArray(),
+                    outfitPresetIds = characterInfo.outfitPresetIds,
+                    isNSFW = characterInfo.isNSFW,
+                    isCore = characterInfo.isCore,
                 };
 
                 if (!Directory.Exists(characterDirectory)) Directory.CreateDirectory(characterDirectory);
-                await File.WriteAllTextAsync($"{characterDirectory}/{addressableAddressId}.json", characterDataObject.ToJson());
+                await File.WriteAllTextAsync($"{characterDirectory}/{modAsset.addressableAddressId}.json",
+                    characterDataObject.ToJson());
             }
 
-            if (!ReferenceEquals(outfitItemInfo, null))
+            if (modAsset.info is OutfitItemInfo outfitItemInfo)
             {
-                Debug.Log("outfit item" + addressableAddressId);
+                Debug.Log("outfit item" + modAsset.addressableAddressId);
                 var outfitItemDataObject = new OutfitItemDataObject
                 {
-                    id = addressableAddressId,
-                    manikinPartAddressIds = new[] { addressableAddressId },
+                    id = modAsset.addressableAddressId,
+                    manikinPartAddressIds = new[] { modAsset.addressableAddressId },
                     minQuality = outfitItemInfo.minQuality,
                     belongsToBody = outfitItemInfo.belongsToBody
                 };
 
                 if (!Directory.Exists(outfitItemDirectory)) Directory.CreateDirectory(outfitItemDirectory);
-                await File.WriteAllTextAsync($"{outfitItemDirectory}/{addressableAddressId}.json", outfitItemDataObject.ToJson());
+                await File.WriteAllTextAsync($"{outfitItemDirectory}/{modAsset.addressableAddressId}.json",
+                    outfitItemDataObject.ToJson());
             }
         }
 

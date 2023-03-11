@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 468a46d0ae32c3544b7d98094e6448a9, type: 3}
   m_Name: AddressableAssetSettings
   m_EditorClassIdentifier: 
-  m_DefaultGroup: 4a90b7934c17c154d8fa8d9dabb81979
+  m_DefaultGroup: 0a973833b4138c045ad977cb741bf015
   m_CachedHash:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
@@ -50,6 +50,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2d1d87e9775706f4e88fe3ab8e5e995a, type: 2}
   - {fileID: 11400000, guid: 893fc172cd196624eb08919fabed58bc, type: 2}
   - {fileID: 11400000, guid: fe417348b43a2e1468f5b55caac695cf, type: 2}
+  - {fileID: 11400000, guid: 761e544d7c4e4fe4291e0a2c258c0c37, type: 2}
+  - {fileID: 11400000, guid: 9e2cc733e8d9ca8488a00275908f47b5, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -72,7 +74,7 @@ MonoBehaviour:
       - m_Id: c9e9fdb1184ee8f47880b3d8f0a4c065
         m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
       - m_Id: f70b1908c72a2954f9dcb3e27c8ecc83
-        m_Value: EgyptGirlMod
+        m_Value: PriestessMod
     m_ProfileEntryNames:
     - m_Id: 9a99d44857769334591e1e908ddb2570
       m_Name: BuildTarget
