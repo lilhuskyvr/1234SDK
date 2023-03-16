@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UniGLTF;
@@ -37,10 +38,10 @@ public class ModBuilder
         return addressableGroup;
     }
 
-    public static void AddAssetToAddressableGroup(string path, AddressableAssetGroup assetGroup,
+    public static ModAsset AddAssetToAddressableGroup(string path, AddressableAssetGroup assetGroup,
         AddressableAssetSettings settings)
     {
-        if (!ValidatePrefab(path)) return;
+        if (!ValidatePrefab(path, out var modAsset)) return null;
 
         var guid = AssetDatabase.AssetPathToGUID(path);
 
@@ -55,18 +56,35 @@ public class ModBuilder
         var prefabGuid = AssetDatabase.AssetPathToGUID(path);
         var prefabEntry = settings.FindAssetEntry(prefabGuid);
 
-        if (ReferenceEquals(prefabEntry, null)) return;
+        if (ReferenceEquals(prefabEntry, null)) return null;
 
-        entry.SetAddress(Path.GetFileNameWithoutExtension(path), false);
+        entry.SetAddress(modAsset.addressableAddressId, false);
+
+        return modAsset;
     }
 
-    private static bool ValidatePrefab(string path)
+    private static bool ValidatePrefab(string path, out ModAsset modAsset)
     {
+        modAsset = new ModAsset();
         var gameObject = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-        var hasCharacterInfo = !ReferenceEquals(gameObject.GetComponent<CharacterInfo>(), null);
-        var hasOutfitItemInfo = !ReferenceEquals(gameObject.GetComponent<OutfitItemInfo>(), null);
+        var characterInfo = gameObject.GetComponent<CharacterInfo>();
+        var outfitItemInfo = gameObject.GetComponent<OutfitItemInfo>();
 
-        return hasCharacterInfo ? ValidateCharacterInfo(gameObject) : hasOutfitItemInfo;
+        if (characterInfo != null && ValidateCharacterInfo(gameObject))
+        {
+            modAsset.addressableAddressId = Path.GetFileNameWithoutExtension(path);
+            modAsset.info = characterInfo;
+            return true;
+        }
+
+        if (outfitItemInfo != null)
+        {
+            modAsset.addressableAddressId = Path.GetFileNameWithoutExtension(path);
+            modAsset.info = outfitItemInfo;
+            return true;
+        }
+
+        return false;
     }
 
     private static bool ValidateCharacterInfo(GameObject go)
@@ -131,12 +149,16 @@ public class ModBuilder
         //set default
         settings.DefaultGroup = modAddressableGroup;
 
+        var modAssets = new List<ModAsset>();
+
         foreach (var file in files)
         {
-            AddAssetToAddressableGroup(file, modAddressableGroup, settings);
+            var modAsset = AddAssetToAddressableGroup(file, modAddressableGroup, settings);
+            if (modAsset == null) continue;
+            modAssets.Add(modAsset);
         }
 
-        var success = await BuildLauncher.BuildAddressables();
+        var success = await BuildLauncher.BuildAddressables(modAssets);
 
         if (success) EditorUtility.DisplayDialog("Successful", $"Built mod '{modName}'", "OK");
     }
