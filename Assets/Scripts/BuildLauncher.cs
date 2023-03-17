@@ -21,8 +21,7 @@ public class BuildLauncher
 
     public static string settings_asset
         = "Assets/AddressableAssetsData/AddressableAssetSettings.asset";
-
-    public static string profile_name = "Default";
+    
     private static AddressableAssetSettings settings;
 
     static void getSettingsObject(string settingsAsset)
@@ -82,18 +81,24 @@ public class BuildLauncher
         return success;
     }
 
-    [MenuItem("VRE/Build Default Addressable Group")]
-    public static void BuildDefaultAddressableGroup()
+    [MenuItem("VRE/Build Default Addressable Group As Mod")]
+    public static void BuildDefaultAddressableGroupAsMod()
     {
         BuildAddressables(new List<ModAsset>());
     }
+    
+    [MenuItem("VRE/Build Default Addressable Group As Game Part")]
+    public static void BuildDefaultAddressableGroupAsGamePart()
+    {
+        BuildAddressables(new List<ModAsset>(), "GamePart");
+    }
 
-    public static async Task<bool> BuildAddressables(List<ModAsset> modAssets)
+    public static async Task<bool> BuildAddressables(List<ModAsset> modAssets, string profileName = "Default")
     {
         //ie: Assets/Mods/SuccubusLily
         var modBuildPathInAssetsFolder = "";
         getSettingsObject(settings_asset);
-        setProfile(profile_name);
+        setProfile(profileName);
         IDataBuilder builderScript
             = AssetDatabase.LoadAssetAtPath<ScriptableObject>(build_script) as IDataBuilder;
 

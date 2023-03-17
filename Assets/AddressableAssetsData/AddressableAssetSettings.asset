@@ -78,6 +78,22 @@ MonoBehaviour:
         m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
       - m_Id: f70b1908c72a2954f9dcb3e27c8ecc83
         m_Value: TestMap
+    - m_InheritedParent: 
+      m_Id: cefb08f2e75c8594d9d4c0675b2c10ba
+      m_ProfileName: GamePart
+      m_Values:
+      - m_Id: 9a99d44857769334591e1e908ddb2570
+        m_Value: '[UnityEditor.EditorUserBuildSettings.activeBuildTarget]'
+      - m_Id: 8a3d92291703d4c4180b74476d123fd4
+        m_Value: '[UnityEngine.Application.dataPath]/Mods/[modName]'
+      - m_Id: ed0c5a627c04a9b4cbb0a5d0265ac37b
+        m_Value: '{UnityEngine.Application.dataPath}/StreamingAssets/Default/[modName]'
+      - m_Id: a9f12f12e6910754186c86f96689c8d7
+        m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
+      - m_Id: c9e9fdb1184ee8f47880b3d8f0a4c065
+        m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
+      - m_Id: f70b1908c72a2954f9dcb3e27c8ecc83
+        m_Value: TestMap
     m_ProfileEntryNames:
     - m_Id: 9a99d44857769334591e1e908ddb2570
       m_Name: BuildTarget
@@ -114,7 +130,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a47bfa89f592fb64a8b696e6a450445f, type: 2}
   - {fileID: 11400000, guid: 0df0d92aa5e14984dba8810192f5a4f1, type: 2}
   - {fileID: 11400000, guid: 9061b2b8b06779d4cb0cffccfa33a423, type: 2}
-  m_ActiveProfileId: 46baaee24ebbb7943a6442d3531beaf3
+  m_ActiveProfileId: cefb08f2e75c8594d9d4c0675b2c10ba
   m_HostingServicesManager:
     m_HostingServiceInfos: []
     m_Settings: {fileID: 11400000}
