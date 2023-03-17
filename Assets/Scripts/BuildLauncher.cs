@@ -82,6 +82,12 @@ public class BuildLauncher
         return success;
     }
 
+    [MenuItem("VRE/Build Default Addressable Group")]
+    public static void BuildDefaultAddressableGroup()
+    {
+        BuildAddressables(new List<ModAsset>());
+    }
+
     public static async Task<bool> BuildAddressables(List<ModAsset> modAssets)
     {
         //ie: Assets/Mods/SuccubusLily
@@ -135,7 +141,8 @@ public class BuildLauncher
 
         EditorUtility.DisplayDialog("Successful!", "Built addressable content", "OK");
 
-        await BuildJsonFiles(modBuildPathInAssetsFolder, modAssets);
+        if (modAssets.Count > 0)
+            await BuildJsonFiles(modBuildPathInAssetsFolder, modAssets);
 
         return true;
     }
