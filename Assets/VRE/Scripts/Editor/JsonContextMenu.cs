@@ -104,5 +104,24 @@ namespace VRE.Scripts.Editor
                 EditorUtility.DisplayDialog("Successful!", $"Copied directory: {sourcePath}", "OK");
             }
         }
+        
+        [MenuItem("Assets/Copy To Game Default", false, 1)]
+        public static void CopyToGameDefault()
+        {
+            foreach (var gameObject in Selection.objects)
+            {
+                var sourcePath = AssetDatabase.GetAssetPath(gameObject).AssetPathToFullPath();
+                if (!Directory.Exists(sourcePath)) continue;
+                var destinationPath =
+                    $"C:/1234/1234URP/1234URP/Build/1234_Data/StreamingAssets/Default/{Path.GetFileName(sourcePath)}";
+
+                if (!Directory.Exists(destinationPath))
+                    Directory.CreateDirectory(destinationPath);
+
+                CopyFilesRecursive(sourcePath, destinationPath);
+
+                EditorUtility.DisplayDialog("Successful!", $"Copied directory: {sourcePath}", "OK");
+            }
+        }
     }
 }
