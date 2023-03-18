@@ -47,6 +47,7 @@ namespace VRE.Scripts.Editor
             AssetDatabase.Refresh();
         }
 
+
         [MenuItem("Assets/Create/MapDataObject.json", false, 1)]
         public static void CreateMapJson()
         {
@@ -58,7 +59,7 @@ namespace VRE.Scripts.Editor
                     Directory.CreateDirectory(dirPath);
 
                 var mapId = gameObject.name;
-
+                
                 var outfitItemDataObject = new MapDataObject
                 {
                     id = mapId,

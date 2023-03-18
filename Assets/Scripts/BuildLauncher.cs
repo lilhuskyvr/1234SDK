@@ -88,7 +88,9 @@ public class BuildLauncher
     {
         //ie: Assets/Mods/SuccubusLily
         var modBuildPathInAssetsFolder = "";
+
         settings = GetSettingsObject();
+
         setProfile(profileName);
         IDataBuilder builderScript
             = AssetDatabase.LoadAssetAtPath<ScriptableObject>(build_script) as IDataBuilder;
