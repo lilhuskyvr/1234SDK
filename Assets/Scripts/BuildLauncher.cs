@@ -19,23 +19,14 @@ public class BuildLauncher
     public static string build_script
         = "Assets/AddressableAssetsData/DataBuilders/BuildScriptPackedMode.asset";
 
-    public static string settings_asset
-        = "Assets/AddressableAssetsData/AddressableAssetSettings.asset";
-    
     private static AddressableAssetSettings settings;
 
-    static void getSettingsObject(string settingsAsset)
+    public static AddressableAssetSettings GetSettingsObject()
     {
-        // This step is optional, you can also use the default settings:
-        //settings = AddressableAssetSettingsDefaultObject.Settings;
+        var settingsAsset = "Assets/AddressableAssetsData/AddressableAssetSettings.asset";
 
-        settings
-            = AssetDatabase.LoadAssetAtPath<ScriptableObject>(settingsAsset)
-                as AddressableAssetSettings;
-
-        if (settings == null)
-            Debug.LogError($"{settingsAsset} couldn't be found or isn't " +
-                           $"a settings object.");
+        return AssetDatabase.LoadAssetAtPath<ScriptableObject>(settingsAsset)
+            as AddressableAssetSettings;
     }
 
     static void setProfile(string profile)
@@ -86,7 +77,7 @@ public class BuildLauncher
     {
         BuildAddressables(new List<ModAsset>());
     }
-    
+
     [MenuItem("VRE/Build Default Addressable Group As Game Part")]
     public static void BuildDefaultAddressableGroupAsGamePart()
     {
@@ -97,7 +88,9 @@ public class BuildLauncher
     {
         //ie: Assets/Mods/SuccubusLily
         var modBuildPathInAssetsFolder = "";
-        getSettingsObject(settings_asset);
+
+        settings = GetSettingsObject();
+
         setProfile(profileName);
         IDataBuilder builderScript
             = AssetDatabase.LoadAssetAtPath<ScriptableObject>(build_script) as IDataBuilder;
