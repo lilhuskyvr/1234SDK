@@ -105,7 +105,7 @@ namespace VRE.Scripts.Editor
             }
         }
         
-        [MenuItem("Assets/Copy To StreamingAssets/Default", false, 1)]
+        [MenuItem("Assets/Copy To StreamingAssets/Default/Free", false, 1)]
         public static void CopyToGameDefault()
         {
             foreach (var gameObject in Selection.objects)
@@ -113,7 +113,7 @@ namespace VRE.Scripts.Editor
                 var sourcePath = AssetDatabase.GetAssetPath(gameObject).AssetPathToFullPath();
                 if (!Directory.Exists(sourcePath)) continue;
                 var destinationPath =
-                    $"C:/1234/1234URP/1234URP/Build/1234_Data/StreamingAssets/Default/{Path.GetFileName(sourcePath)}";
+                    $"C:/1234/1234URP/1234URP/Build/1234_Data/StreamingAssets/Default/Free/{Path.GetFileName(sourcePath)}";
 
                 if (!Directory.Exists(destinationPath))
                     Directory.CreateDirectory(destinationPath);

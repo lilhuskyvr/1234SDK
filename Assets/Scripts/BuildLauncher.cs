@@ -72,16 +72,16 @@ public class BuildLauncher
         return success;
     }
 
-    [MenuItem("VRE/Build Default Addressable Group As Mod")]
+    [MenuItem("VRE/Build Default Addressable Group For StreamingAssets/Mods")]
     public static void BuildDefaultAddressableGroupAsMod()
     {
         BuildAddressables(new List<ModAsset>());
     }
 
-    [MenuItem("VRE/Build Default Addressable Group For StreamingAssets/Default")]
+    [MenuItem("VRE/Build Default Addressable Group For StreamingAssets/Default/Free")]
     public static void BuildDefaultAddressableGroupAsGamePart()
     {
-        BuildAddressables(new List<ModAsset>(), "StreamingAssets/Default");
+        BuildAddressables(new List<ModAsset>(), "StreamingAssets/Default/Free");
     }
     
     [MenuItem("VRE/Build Default Addressable Group For StreamingAssets/Default/Full")]
