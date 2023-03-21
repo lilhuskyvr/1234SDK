@@ -86,7 +86,7 @@ namespace VRE.Scripts.Editor
             }
         }
 
-        [MenuItem("Assets/Copy To Game Mods", false, 1)]
+        [MenuItem("Assets/Copy To StreamingAssets/Mods", false, 1)]
         public static void CopyToGameMods()
         {
             foreach (var gameObject in Selection.objects)
@@ -105,7 +105,7 @@ namespace VRE.Scripts.Editor
             }
         }
         
-        [MenuItem("Assets/Copy To Game Default", false, 1)]
+        [MenuItem("Assets/Copy To StreamingAssets/Default", false, 1)]
         public static void CopyToGameDefault()
         {
             foreach (var gameObject in Selection.objects)
@@ -114,6 +114,25 @@ namespace VRE.Scripts.Editor
                 if (!Directory.Exists(sourcePath)) continue;
                 var destinationPath =
                     $"C:/1234/1234URP/1234URP/Build/1234_Data/StreamingAssets/Default/{Path.GetFileName(sourcePath)}";
+
+                if (!Directory.Exists(destinationPath))
+                    Directory.CreateDirectory(destinationPath);
+
+                CopyFilesRecursive(sourcePath, destinationPath);
+
+                EditorUtility.DisplayDialog("Successful!", $"Copied directory: {sourcePath}", "OK");
+            }
+        }
+        
+        [MenuItem("Assets/Copy To StreamingAssets/Default/Full", false, 1)]
+        public static void CopyToGameDefaultFull()
+        {
+            foreach (var gameObject in Selection.objects)
+            {
+                var sourcePath = AssetDatabase.GetAssetPath(gameObject).AssetPathToFullPath();
+                if (!Directory.Exists(sourcePath)) continue;
+                var destinationPath =
+                    $"C:/1234/1234URP/1234URP/Build/1234_Data/StreamingAssets/Default/Full/{Path.GetFileName(sourcePath)}";
 
                 if (!Directory.Exists(destinationPath))
                     Directory.CreateDirectory(destinationPath);
