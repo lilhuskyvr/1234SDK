@@ -78,10 +78,16 @@ public class BuildLauncher
         BuildAddressables(new List<ModAsset>());
     }
 
-    [MenuItem("VRE/Build Default Addressable Group As Game Part")]
+    [MenuItem("VRE/Build Default Addressable Group For StreamingAssets/Default")]
     public static void BuildDefaultAddressableGroupAsGamePart()
     {
-        BuildAddressables(new List<ModAsset>(), "GamePart");
+        BuildAddressables(new List<ModAsset>(), "StreamingAssets/Default");
+    }
+    
+    [MenuItem("VRE/Build Default Addressable Group For StreamingAssets/Default/Full")]
+    public static void BuildDefaultAddressableGroupAsGamePartFull()
+    {
+        BuildAddressables(new List<ModAsset>(), "StreamingAssets/Default/Full");
     }
 
     public static async Task<bool> BuildAddressables(List<ModAsset> modAssets, string profileName = "Default")
