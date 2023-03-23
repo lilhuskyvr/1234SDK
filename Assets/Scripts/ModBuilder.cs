@@ -69,6 +69,7 @@ public class ModBuilder
         var gameObject = AssetDatabase.LoadAssetAtPath<GameObject>(path);
         var characterInfo = gameObject.GetComponent<CharacterInfo>();
         var outfitItemInfo = gameObject.GetComponent<OutfitItemInfo>();
+        var weaponInfo = gameObject.GetComponent<WeaponInfo>();
 
         if (characterInfo != null && ValidateCharacterInfo(gameObject))
         {
@@ -81,6 +82,13 @@ public class ModBuilder
         {
             modAsset.addressableAddressId = Path.GetFileNameWithoutExtension(path);
             modAsset.info = outfitItemInfo;
+            return true;
+        }
+        
+        if (weaponInfo != null)
+        {
+            modAsset.addressableAddressId = Path.GetFileNameWithoutExtension(path);
+            modAsset.info = weaponInfo;
             return true;
         }
 

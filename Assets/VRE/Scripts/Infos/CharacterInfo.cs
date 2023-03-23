@@ -1,4 +1,8 @@
+using System.Collections.Generic;
+using System.Linq;
+using EasyButtons;
 using UnityEngine;
+using VRE.Scripts.WeaponComponents;
 
 namespace VRE.Scripts.Infos
 {
@@ -6,7 +10,8 @@ namespace VRE.Scripts.Infos
     {
         Melee,
         Succubus,
-        Fighter
+        Fighter,
+        Spear
     }
 
     public enum CharacterSoundPresetEnum
@@ -23,11 +28,17 @@ namespace VRE.Scripts.Infos
     {
         public AnimationPresetEnum animationPresetEnum;
         public CharacterSoundPresetEnum characterSoundPresetEnum;
-        public WeaponPresetEnum[] weaponPresetEnums = { };
+        public List<string> weaponPresetIds = new();
         public string[] outfitPresetIds = { };
         public bool isNSFW;
         [Tooltip("This rig is a base rig and will only be used to create new character. It can't be spawned in battle")]
         public bool isBaseRig;
         public bool isCore;
+        
+        [Button]
+        public void SetWeaponPresets(WeaponPresetEnum weaponPresetEnum)
+        {
+            weaponPresetIds.Add(weaponPresetEnum.ToString());
+        }
     }
 }
