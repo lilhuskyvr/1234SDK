@@ -83,7 +83,7 @@ public class BuildLauncher
     {
         BuildAddressables(new List<ModAsset>(), "StreamingAssets/Default/Free");
     }
-    
+
     [MenuItem("VRE/Build Default Addressable Group For StreamingAssets/Default/Full")]
     public static void BuildDefaultAddressableGroupAsGamePartFull()
     {
@@ -215,6 +215,7 @@ public class BuildLauncher
     {
         var characterDirectory = $"{directoryPath}/Characters";
         var outfitItemDirectory = $"{directoryPath}/OutfitItems";
+        var weaponDirectory = $"{directoryPath}/Weapons";
 
         foreach (var modAsset in modAssets)
         {
@@ -227,7 +228,7 @@ public class BuildLauncher
                     animationPresetId =
                         characterInfo.animationPresetEnum.ToString(),
                     characterSoundPresetId = characterInfo.characterSoundPresetEnum.ToString(),
-                    weaponPresetIds = characterInfo.weaponPresetEnums.Select(wpe => wpe.ToString()).ToArray(),
+                    weaponPresetIds = characterInfo.weaponPresetIds.ToArray(),
                     outfitPresetIds = characterInfo.outfitPresetIds,
                     isNSFW = characterInfo.isNSFW,
                     isCore = characterInfo.isCore,
@@ -252,6 +253,21 @@ public class BuildLauncher
                 if (!Directory.Exists(outfitItemDirectory)) Directory.CreateDirectory(outfitItemDirectory);
                 await File.WriteAllTextAsync($"{outfitItemDirectory}/{modAsset.addressableAddressId}.json",
                     outfitItemDataObject.ToJson());
+            }
+            
+            if (modAsset.info is WeaponInfo weaponInfo)
+            {
+                Debug.Log("outfit item" + modAsset.addressableAddressId);
+                var weaponDataObject = new WeaponDataObject
+                {
+                    id = modAsset.addressableAddressId,
+                    weaponAddressId = modAsset.addressableAddressId,
+                    displayInMenu = weaponInfo.displayInMenu
+                };
+
+                if (!Directory.Exists(weaponDirectory)) Directory.CreateDirectory(weaponDirectory);
+                await File.WriteAllTextAsync($"{weaponDirectory}/{modAsset.addressableAddressId}.json",
+                    weaponDataObject.ToJson());
             }
         }
 

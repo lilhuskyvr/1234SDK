@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 468a46d0ae32c3544b7d98094e6448a9, type: 3}
   m_Name: AddressableAssetSettings
   m_EditorClassIdentifier: 
-  m_DefaultGroup: 00fa7c54ec957044ca2fceacf76c8d72
+  m_DefaultGroup: 2971793f470e5e5429af2c83a76a268d
   m_CachedHash:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
@@ -81,7 +81,7 @@ MonoBehaviour:
       - m_Id: c9e9fdb1184ee8f47880b3d8f0a4c065
         m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
       - m_Id: f70b1908c72a2954f9dcb3e27c8ecc83
-        m_Value: PrimroseGrisSwimSuitMod
+        m_Value: PrimroseEgyptMod
     - m_InheritedParent: 
       m_Id: cefb08f2e75c8594d9d4c0675b2c10ba
       m_ProfileName: StreamingAssets/Default/Free
@@ -150,7 +150,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a47bfa89f592fb64a8b696e6a450445f, type: 2}
   - {fileID: 11400000, guid: 0df0d92aa5e14984dba8810192f5a4f1, type: 2}
   - {fileID: 11400000, guid: 9061b2b8b06779d4cb0cffccfa33a423, type: 2}
-  m_ActiveProfileId: cefb08f2e75c8594d9d4c0675b2c10ba
+  m_ActiveProfileId: 46baaee24ebbb7943a6442d3531beaf3
   m_HostingServicesManager:
     m_HostingServiceInfos: []
     m_Settings: {fileID: 11400000}
