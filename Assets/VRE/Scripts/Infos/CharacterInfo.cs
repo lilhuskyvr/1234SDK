@@ -1,8 +1,8 @@
+#if UNITY_EDITOR
 using System.Collections.Generic;
-using System.Linq;
 using EasyButtons;
+using UnityEditor;
 using UnityEngine;
-using VRE.Scripts.WeaponComponents;
 
 namespace VRE.Scripts.Infos
 {
@@ -11,17 +11,24 @@ namespace VRE.Scripts.Infos
         Melee,
         Succubus,
         Fighter,
-        Spear
+        Spear,
+        TwoHandedSword
     }
 
     public enum CharacterSoundPresetEnum
     {
+        Male,
         Female
     }
 
     public enum WeaponPresetEnum
     {
-        SwordScout
+        SwordScout,
+        SwordA1,
+        SwordE,
+        SwordF,
+        SwordG,
+        SwordI
     }
 
     public class CharacterInfo : Info
@@ -30,15 +37,27 @@ namespace VRE.Scripts.Infos
         public CharacterSoundPresetEnum characterSoundPresetEnum;
         public List<string> weaponPresetIds = new();
         public string[] outfitPresetIds = { };
-        public bool isNSFW;
-        [Tooltip("This rig is a base rig and will only be used to create new character. It can't be spawned in battle")]
-        public bool isBaseRig;
+        public SkinnedMeshRenderer[] outfitItemParts;
+        public string[] hairPresetIds = { };
+
         public bool isCore;
-        
+
         [Button]
         public void SetWeaponPresets(WeaponPresetEnum weaponPresetEnum)
         {
             weaponPresetIds.Add(weaponPresetEnum.ToString());
+            EditorUtility.SetDirty(gameObject);
+            AssetDatabase.SaveAssets();
+        }
+
+        public void BeforeBuild()
+        {
+            if (outfitItemParts == null) return;
+            foreach (var skinnedMeshRenderer in outfitItemParts)
+            {
+                skinnedMeshRenderer.gameObject.SetActive(false);
+            }
         }
     }
 }
+#endif

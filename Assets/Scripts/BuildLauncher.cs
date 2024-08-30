@@ -215,7 +215,12 @@ public class BuildLauncher
     {
         var characterDirectory = $"{directoryPath}/Characters";
         var outfitItemDirectory = $"{directoryPath}/OutfitItems";
+        var outfitItemGroupDirectory = $"{directoryPath}/OutfitItemGroups";
+        var outfitDirectory = $"{directoryPath}/Outfits";
         var weaponDirectory = $"{directoryPath}/Weapons";
+        var hairDirectory = $"{directoryPath}/Hairs";
+        var outfitPresetIds = new List<string>();
+        var characterPresetIds = new List<string>();
 
         foreach (var modAsset in modAssets)
         {
@@ -230,34 +235,117 @@ public class BuildLauncher
                     characterSoundPresetId = characterInfo.characterSoundPresetEnum.ToString(),
                     weaponPresetIds = characterInfo.weaponPresetIds.ToArray(),
                     outfitPresetIds = characterInfo.outfitPresetIds,
-                    isNSFW = characterInfo.isNSFW,
+                    hairPresetIds = characterInfo.hairPresetIds,
                     isCore = characterInfo.isCore,
+                    outfitItemParts = characterInfo.outfitItemParts.Select(part => part.name).ToArray()
                 };
+
+                characterPresetIds.Add(characterDataObject.id);
+                outfitPresetIds.AddRange(characterInfo.outfitPresetIds);
 
                 if (!Directory.Exists(characterDirectory)) Directory.CreateDirectory(characterDirectory);
                 await File.WriteAllTextAsync($"{characterDirectory}/{modAsset.addressableAddressId}.json",
                     characterDataObject.ToJson());
+                
+                foreach (var characterInfoOutfitItemPart in characterInfo.outfitItemParts)
+                {
+                    var outfitItemDataObject = new OutfitItemDataObject
+                    {
+                        id = characterInfoOutfitItemPart.name,
+                        manikinPartAddressIds = new[] { characterInfoOutfitItemPart.name },
+                        minQuality = 1,
+                        belongsToBody = false,
+                        coverSkinMeshRendererNames = { },
+                    };
+
+                    if (!Directory.Exists(outfitItemDirectory)) Directory.CreateDirectory(outfitItemDirectory);
+                    await File.WriteAllTextAsync($"{outfitItemDirectory}/{characterInfoOutfitItemPart.name}.json",
+                        outfitItemDataObject.ToJson());
+                }
+                
             }
 
             if (modAsset.info is OutfitItemInfo outfitItemInfo)
             {
                 Debug.Log("outfit item" + modAsset.addressableAddressId);
-                var outfitItemDataObject = new OutfitItemDataObject
-                {
-                    id = modAsset.addressableAddressId,
-                    manikinPartAddressIds = new[] { modAsset.addressableAddressId },
-                    minQuality = outfitItemInfo.minQuality,
-                    belongsToBody = outfitItemInfo.belongsToBody
-                };
 
-                if (!Directory.Exists(outfitItemDirectory)) Directory.CreateDirectory(outfitItemDirectory);
-                await File.WriteAllTextAsync($"{outfitItemDirectory}/{modAsset.addressableAddressId}.json",
-                    outfitItemDataObject.ToJson());
+                if (outfitItemInfo.colors.Count == 0)
+                {
+                    var outfitItemDataObject = new OutfitItemDataObject
+                    {
+                        id = modAsset.addressableAddressId,
+                        manikinPartAddressIds = new[] { modAsset.addressableAddressId },
+                        minQuality = outfitItemInfo.minQuality,
+                        belongsToBody = outfitItemInfo.belongsToBody,
+                        coverSkinMeshRendererNames = outfitItemInfo.coverSkinMeshRendererNames,
+                    };
+
+                    if (!Directory.Exists(outfitItemDirectory)) Directory.CreateDirectory(outfitItemDirectory);
+                    await File.WriteAllTextAsync($"{outfitItemDirectory}/{modAsset.addressableAddressId}.json",
+                        outfitItemDataObject.ToJson());
+
+                    if (modAsset.addressableAddressId.LastIndexOf("_Optional") ==
+                        modAsset.addressableAddressId.Length - "_Optional".Length)
+                    {
+                        var optionalOutfitItemGroupDataObject = new OutfitItemGroupDataObject
+                        {
+                            id = modAsset.addressableAddressId,
+                            outfitItemIds = new[]
+                            {
+                                "",
+                                modAsset.addressableAddressId
+                            }
+                        };
+
+                        if (!Directory.Exists(outfitItemGroupDirectory))
+                            Directory.CreateDirectory(outfitItemGroupDirectory);
+                        await File.WriteAllTextAsync(
+                            $"{outfitItemGroupDirectory}/{optionalOutfitItemGroupDataObject.id}.json",
+                            optionalOutfitItemGroupDataObject.ToJson());
+                    }
+                }
+                else
+                {
+                    var outfitItemDataObject = new OutfitItemDataObject
+                    {
+                        id = modAsset.addressableAddressId,
+                        manikinPartAddressIds = new[] { modAsset.addressableAddressId },
+                        minQuality = outfitItemInfo.minQuality,
+                        belongsToBody = outfitItemInfo.belongsToBody,
+                        coverSkinMeshRendererNames = outfitItemInfo.coverSkinMeshRendererNames,
+                        hexColors = outfitItemInfo.colors.ToArray()
+                    };
+
+                    if (!Directory.Exists(outfitItemDirectory)) Directory.CreateDirectory(outfitItemDirectory);
+                    await File.WriteAllTextAsync($"{outfitItemDirectory}/{outfitItemDataObject.id}.json",
+                        outfitItemDataObject.ToJson());
+
+                    foreach (var color in outfitItemInfo.colors)
+                    {
+                        outfitItemDataObject.id = $"{modAsset.addressableAddressId}_{color}";
+                        outfitItemDataObject.hexColors = new[] { color };
+
+                        await File.WriteAllTextAsync($"{outfitItemDirectory}/{outfitItemDataObject.id}.json",
+                            outfitItemDataObject.ToJson());
+                    }
+
+                    var coloredOutfitItemGroupDataObject = new OutfitItemGroupDataObject
+                    {
+                        id = modAsset.addressableAddressId,
+                        outfitItemIds = outfitItemInfo.colors
+                            .Select(color => $"{modAsset.addressableAddressId}_{color}").ToArray(),
+                    };
+
+                    if (!Directory.Exists(outfitItemGroupDirectory))
+                        Directory.CreateDirectory(outfitItemGroupDirectory);
+                    await File.WriteAllTextAsync($"{outfitItemGroupDirectory}/{modAsset.addressableAddressId}.json",
+                        coloredOutfitItemGroupDataObject.ToJson());
+                }
             }
-            
+
             if (modAsset.info is WeaponInfo weaponInfo)
             {
-                Debug.Log("outfit item" + modAsset.addressableAddressId);
+                Debug.Log("weapon" + modAsset.addressableAddressId);
                 var weaponDataObject = new WeaponDataObject
                 {
                     id = modAsset.addressableAddressId,
@@ -268,6 +356,100 @@ public class BuildLauncher
                 if (!Directory.Exists(weaponDirectory)) Directory.CreateDirectory(weaponDirectory);
                 await File.WriteAllTextAsync($"{weaponDirectory}/{modAsset.addressableAddressId}.json",
                     weaponDataObject.ToJson());
+            }
+            
+            if (modAsset.info is HairInfo hairInfo)
+            {
+                Debug.Log("hair" + modAsset.addressableAddressId);
+                var hairDataObject = new HairDataObject
+                {
+                    id = modAsset.addressableAddressId,
+                    hairAddressId = modAsset.addressableAddressId
+                };
+
+                if (!Directory.Exists(hairDirectory)) Directory.CreateDirectory(hairDirectory);
+                await File.WriteAllTextAsync($"{hairDirectory}/{modAsset.addressableAddressId}.json",
+                    hairDataObject.ToJson());
+            }
+        }
+
+        foreach (var outfitPresetId in outfitPresetIds)
+        {
+            var outfitDataObject = new OutfitDataObject
+            {
+                id = outfitPresetId
+            };
+
+            if (!Directory.Exists(outfitDirectory)) Directory.CreateDirectory(outfitDirectory);
+            await File.WriteAllTextAsync($"{outfitDirectory}/{outfitPresetId}.json",
+                outfitDataObject.ToJson());
+        }
+
+        var outfitItemGroupParts = new List<string>
+        {
+            "Chests",
+            "Capes",
+            "Jackets",
+            "Skirts",
+            "Thighs",
+            "Calves",
+            "ForeArms",
+            "Gloves",
+            "Horns",
+            "Glasses",
+            "Headphones",
+            "HairAccessories",
+            "Shoes",
+            "Bras",
+            "Underwears",
+            "Shoulders",
+            "Mouths",
+            "Necklaces",
+            "Collars",
+            "FullSuits",
+            "Elbows",
+            "Dresses",
+            "AnkleArmors",
+            "AnkleOrnaments",
+            "Belts",
+            "Bottoms",
+            "EarRings",
+            "Hairs",
+            "KneeArmors",
+            "LeftCapes",
+            "LeftArms",
+            "LeftForeArms",
+            "LeftShoulders",
+            "LeftThighs",
+            "Masks",
+            "LegStraps",
+            "RightCapes",
+            "RightArms",
+            "RightForeArms",
+            "RightShoulders",
+            "RightThighs",
+            "Tops"
+        };
+
+        foreach (var characterPresetId in characterPresetIds)
+        {
+            foreach (var outfitItemGroupPart in outfitItemGroupParts)
+            {
+                var outfitItemGroupDataObject = new OutfitItemGroupDataObject
+                {
+                    id = $"{characterPresetId}_{outfitItemGroupPart}",
+                    name = outfitItemGroupPart,
+                };
+
+                if (!Directory.Exists(outfitItemGroupDirectory)) Directory.CreateDirectory(outfitItemGroupDirectory);
+
+                var outfitItemGroupPath = $"{outfitItemGroupDirectory}/{outfitItemGroupDataObject.id}.json";
+
+                if (!File.Exists(outfitItemGroupPath))
+                {
+                    await File.WriteAllTextAsync(outfitItemGroupPath,
+                        outfitItemGroupDataObject.ToJson());
+                }
             }
         }
 

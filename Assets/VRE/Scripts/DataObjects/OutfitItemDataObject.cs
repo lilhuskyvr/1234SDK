@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace VRE.Scripts.DataObjects
+﻿namespace VRE.Scripts.DataObjects
 {
     public class OutfitItemDataObject : DataObject
     {
@@ -8,5 +6,8 @@ namespace VRE.Scripts.DataObjects
         public string[] manikinPartAddressIds = { };
         public float minQuality = 1f;
         public bool belongsToBody;
+        public string[] coverSkinMeshRendererNames = { };
+        public string[] hexColors = { };
+        public bool tearable;
     }
 }

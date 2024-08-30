@@ -7,6 +7,8 @@ namespace VRE.Scripts.DataObjects
         public string characterSoundPresetId;
         public string[] weaponPresetIds = {};
         public string[] outfitPresetIds = {};
+        public string[] outfitItemParts = { };
+        public string[] hairPresetIds = {};
         public string characterRigAddressId;
         public bool isNSFW;
         public bool isCore;
